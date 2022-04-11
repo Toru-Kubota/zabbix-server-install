@@ -1,0 +1,113 @@
+---
+- hosts: zabbix_servers
+
+##### ZABBIX Install & Setting #####
+
+# Module Install & Setting
+  tasks: 
+  - name: install module
+    yum: 
+      name: "{{item}}"
+      state: present
+    loop: "{{install_packages_list}}"
+
+# Systemd Start
+  - name: systemd start
+    systemd:
+      name: "{{item}}"
+      state: started
+    loop:
+      - "httpd"
+      - "mariadb"
+
+# MariaDB Setting
+  - name: madiadb root user password setting
+    mysql_user:
+      login_user: "{{ mariadb_root_user }}"
+      login_password: "{{ mariadb_root_password }}"
+      name: "{{ mariadb_root_user }}"
+      password: "{{ mariadb_root_password }}"
+      check_implicit_admin: yes
+      state: present
+
+# php.ini Setting
+  - name: php.ini setting
+    template:
+      src: ./files/php.ini.j2
+      dest: /etc/php.ini
+      owner: root
+      group: root
+      mode: 0644
+
+# Module Install & Setting
+  - name: install zabbix repository
+    yum: 
+      name: "https://repo.zabbix.com/zabbix/{{zabbix_ver}}/{{zabbix_dist}}/{{zabbix_dist_ver}}/{{zabbix_arch}}/zabbix-release-{{zabbix_ver}}-1.el8.noarch.rpm"
+      state: present
+      disable_gpg_check: yes
+
+  - name: install module
+    yum: 
+      name: "{{item}}"
+      state: present
+    loop: "{{zabbix_packages_list}}"
+
+# Create Database & User
+  - name: create zabbix database
+    mysql_db:
+      login_user: "{{mariadb_root_user}}"
+      login_password: "{{mariadb_root_password}}"
+      name: "zabbix"
+      state: present
+      encoding: utf8
+      collation: utf8_bin
+
+  - name: create user for zabbix database
+    mysql_user:
+     login_user: "{{mariadb_root_user}}"
+     login_password: "{{mariadb_root_password}}"
+     name: "zabbix"
+     password: "{{mariadb_zabbix_password}}"
+     priv: "zabbix.*:ALL"
+     state: present
+
+  - name: check tables 
+    shell: mysql -u{{mariadb_root_user}} -p{{mariadb_root_password}} zabbix -e"show tables"
+    register: show_tables
+
+  - name: create zabbix database table 
+    shell: "zcat /usr/share/doc/zabbix-server-mysql/create.sql.gz | mysql -uzabbix -Dzabbix -p{{mariadb_zabbix_password}}"
+    when: show_tables.stdout.find("items") == -1
+
+# Zabbix Setting
+  - name: zabbix_server.conf setting
+    template:
+      src: ./files/zabbix_server.conf.j2
+      dest: /etc/zabbix/zabbix_server.conf
+      owner: root
+      group: root
+      mode: 0600
+
+  - name: zabbix.conf setting
+    template:
+      src: ./files/zabbix.conf.j2
+      dest: /etc/php-fpm.d/zabbix.conf
+      owner: root
+      group: root
+      mode: 0644
+
+  - name: systemd enable
+    systemd:
+      name: "{{item}}"
+      enabled: yes
+    loop: "{{zabbix_service_list}}"
+
+  - name: systemd restart
+    systemd:
+      name: "{{item}}"
+      state: restarted
+    loop: 
+      - "zabbix-server"
+      - "zabbix-agent"
+      - "httpd"
+      - "php-fpm"
