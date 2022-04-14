@@ -25,5 +25,5 @@ zabbix_service_list:
   - "php-fpm"
   - "mariadb"
 mariadb_root_user: "root"
-mariadb_root_password: "***********"
-mariadb_zabbix_password: "***********"
+mariadb_root_password: "password"
+mariadb_zabbix_password: "password"

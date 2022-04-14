@@ -1,14 +1,18 @@
-# Install Zabbix Server
-## Requirements
-* AlmaLinux release 8.5
-* ZABBIX Server 5.0
+## Features
+Install ZABBIX server for AlmaLinux 8
 
-## Installation
-### Change password of following var
-group_vars/zabbix_server.yml
+## Require
+Ansible on AlmaLinux 8
 
-mariadb_root_password: 
-mariadb_zabbix_password: 
+## Install
 
-### Run playbook
+Set the following variables in **group_vars/zabbix_server.yml**
+| variable| explanation |
+| ------ | ------ |
+| mariadb_root_password | mariadb root password|
+| mariadb_zabbix_password | mariadb zabbix user password|
+
+Run ansible playbook
+```sh
 ansible-playbook -i inventory.ini Zabbix-Server-Setting.yml
+```
