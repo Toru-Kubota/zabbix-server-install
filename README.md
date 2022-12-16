@@ -1,18 +1,16 @@
-## Features
-Install ZABBIX server for AlmaLinux 8
+## 環境
+* Almalinux 8
+* ZABBIX 5
 
-## Require
-Ansible on AlmaLinux 8
+## パラメーター
+Playbook実行前に```group_vars/zabbix_server.yml```の下記パラメーター変更して下さい。
 
-## Install
+デフォルトは```passsword```に設定されます。
 
-Set the following variables in **group_vars/zabbix_server.yml**
-| variable| explanation |
+| 変数| 説明 |
 | ------ | ------ |
 | mariadb_root_password | mariadb root password|
 | mariadb_zabbix_password | mariadb zabbix user password|
 
-Run ansible playbook
-```sh
-ansible-playbook -i inventory.ini Zabbix-Server-Setting.yml
-```
+## 使用方法
+詳しいやり方はXXXXにあります。
