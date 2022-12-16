@@ -13,4 +13,4 @@ Playbook実行前に```group_vars/zabbix_server.yml```の下記パラメータ�
 | mariadb_zabbix_password | mariadb zabbix user password|
 
 ## 使用方法
-詳しいやり方はXXXXにあります。
+詳しいやり方は[Zabbixインストール用Ansible Playbook(EC2)](https://qiita.com/tkubota/items/e395e20bb14acf35be42)にあります。
