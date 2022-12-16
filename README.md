@@ -1,3 +1,11 @@
+## 内容
+
+
+**ZABBXIXインストール用のAnsible Playbookです。**
+
+![Zabbix_logo](https://user-images.githubusercontent.com/102895466/208058847-00d28fbe-62a6-48af-89a3-27407dce8d51.png)
+
+
 ## 環境
 * Almalinux 8
 * ZABBIX 5
